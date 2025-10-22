@@ -28,15 +28,17 @@ To improve understanding of **groundwater–surface water interactions**, **kars
 **Dr. Abe Springer**  
 *Professor of Ecohydrogeology, School of Earth & Sustainability*  
 Research interests: Karst hydrogeology, groundwater-surface water interactions, ecohydrology of springs, and sustainable water management in arid regions.  
-[NAU Faculty Page →](https://nau.edu/)  
+- [NAU Faculty Page →](https://directory.nau.edu/person/aes9)
+- [Google Scholar](https://scholar.google.com/citations?hl=en&user=X53gmAQAAAAJ)
+
 
 ![](https://github.com/SpringerLabNAU/SpringerLabNAU/blob/main/Images/Abe_image.jpg)
 
 ### **Current Members**
 - **Ryan Lima, Ph.D.** – *Postdoctoral Scholar*  
   *Mapping and modeling landscape-scale groundwater recharge in Arizona’s karst terrains.*  
-- **[Graduate Student 1]** – *M.S. Hydrogeology*  
-  *Dye tracing and aquifer connectivity in the Grand Canyon region.*  
+- **[Caelum Mroczek]** – *Ph.D. Candidate*  
+  *Using Machine Learning to quantify baseflow, Dye tracing and aquifer connectivity in the Grand Canyon region.*  
 - **[Graduate Student 2]** – *M.S. Ecohydrology*  
   *Spring ecosystem response to forest restoration and climate variability.*  
 

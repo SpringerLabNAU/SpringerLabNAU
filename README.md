@@ -1,5 +1,7 @@
 # 🌎 Springer Ecohydrology & Hydrogeology Lab
 *Understanding groundwater, karst, and springs across the Southwest.*
+
+
 ![](https://github.com/SpringerLabNAU/SpringerLabNAU/blob/main/Images/SpringerLabs_Final.png)
 
 ## 🧭 About

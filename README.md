@@ -37,8 +37,8 @@ Research interests: Karst hydrogeology, groundwater-surface water interactions, 
 ### **Current Members**
 - **Ryan Lima, Ph.D.** – *Postdoctoral Scholar*  
   *Mapping and modeling landscape-scale groundwater recharge in Arizona’s karst terrains.*  
-- **[Caelum Mroczek]** – *Ph.D. Candidate*  
-  *Using Machine Learning to quantify baseflow, Dye tracing and aquifer connectivity in the Grand Canyon region.*  
+- **Caelum Mroczek** – *Ph.D. Candidate*  
+  *Using AI/ML to quantify baseflow, Dye tracing and aquifer connectivity in the arid regions.*  
 - **[Graduate Student 2]** – *M.S. Ecohydrology*  
   *Spring ecosystem response to forest restoration and climate variability.*  
 

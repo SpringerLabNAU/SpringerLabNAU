@@ -1,0 +1,37 @@
+project:
+  type: website
+
+website:
+  title: "Base-flow Separation"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - text: Fundamentals
+        menu:
+          - href: bf-basics.qmd
+            text: Base-flow Basics
+          - href: lyne-hollick.qmd
+            text: Lyne-Hollick Filter
+          - href: eckhardt.qmd
+            text: Eckhardt Filter
+      - text: Examples
+        menu:
+          - href: example_LH.qmd
+            text: Lyne-Hollick Example
+          - href: example_Eck.qmd
+            text: Eckhardt Example
+      - href: packages.qmd
+        text: Packages
+
+bibliography: references.bib
+
+format:
+  html:
+    theme: cosmo
+    code-block-bg: true
+    code-block-border-left: "#31BAE9"
+  pdf:
+    documentclass: scrreprt
+
+editor: visual

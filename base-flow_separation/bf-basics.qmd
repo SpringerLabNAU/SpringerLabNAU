@@ -1,0 +1,13 @@
+# The Basics of Base Flow
+
+![Conceptual figure of regional groundwater flow discharging into streams (base flow). Adapted from Barlow & Leake (2012).](images/conceptual_bf.png){width="596"}
+
+Base flow is the
+
+## Base-flow Index
+
+Base-flow index (BFI) is a normalized measure of the contribution of base flow to total streamflow in a river. It's values depend on the time period considered, and allows for the comparison of base-flow contribution in rivers of varying size and discharge.
+
+To calculate a representative value for BFI, it is best to consider the longest time period viable for the desired analysis. That is, BFI can vary if calculated monthly vs. annually vs. long-term (multi-year).
+
+![](images/bfi_info.png)

@@ -1,0 +1,50 @@
+---
+title: "Eckhardt Filter"
+format: html
+---
+
+The Eckhardt digital filter is a widely used two-parameter method for separating base flow from total streamflow. Introduced by @eckhardt2005, it improves upon one-parameter filters such as Lyne–Hollick by explicitly incorporating watershed characteristics through the maximum base-flow index ($BFImax$).
+
+The Eckhardt filter is recursive and produces a base-flow time series that varies smoothly with discharge. The method is applied forward in time, and performance depends on the appropriate choice of its two parameters: the recession constant ($\alpha$) and the maximum base-flow index ($BFImax$).
+
+The equation for the Eckhardt filter is as follows: $$
+b_k = \frac{(1 - BFImax) \cdot \alpha \ b_{k-1} + (1 - \alpha) \cdot BFImax \ Q_k}{1 - \alpha \cdot BFImax}
+$$\
+where $b$ is base flow, $\alpha$ is the recession constant, $BFImax$ is the maximum base-flow index, $Q$ is the total streamflow, and $k$ is the time step.
+
+## Parameters
+
+### Recession Constant ($\alpha$)
+
+The recession constant ($\alpha$) controls the rate at which base flow recedes over time. It typically ranges between 0.90 and 0.98, with higher values indicating slower recession rates.
+
+A common approach to estimate $\alpha$ is to analyze recession periods in the streamflow record. This can be done by identifying periods of declining discharge and fitting an exponential decay model to estimate the recession constant.
+
+### Maximum Base-Flow Index ($BFImax$)
+
+The maximum base-flow index ($BFImax$) represents the maximum proportion of total streamflow that can be attributed to base flow in a system.
+
+Typical values, provided by @eckhardt2005, are:
+
+-   Perennial, porous aquifers: 0.80
+
+-   Ephemeral, porous aquifers: 0.50
+
+-   Perennial, hard-rock aquifers: 0.25
+
+A robust approach to estimating $BFImax$ is the backwards-filter method introduced by @collischonn2013, which reconstructs a recession-controlled base-flow hydrograph by applying the filter in reverse and comparing base-flow volume to total volume.
+
+## Considerations
+
+-   The Eckhardt filter is sensitive to the choice of both $\alpha$ and $BFImax$. It is recommended to test different values to find the most appropriate ones for a given dataset.
+    -   Commonly used values for $\alpha$ are between 0.90 and 0.98, while $BFImax$ values depend on watershed characteristics as outlined above.
+-   The Eckhardt filter is best suited for continuous streamflow records and may not perform well with datasets that have significant gaps or irregular sampling intervals.
+-   The Eckhardt filter is sensitive to the choice of both parameters— $\alpha$ and $BFImax$.
+    -   $\alpha$ should be estimated from **clean recession segments**.
+    -   $BFImax$ should reflect the **long-term hydrologic character** of the watershed rather than short-term variability.
+-   $BFImax$ values are not universal.
+    -   Highly permeable, perennial systems often justify $BFImax$ in the range 0.80–0.95.
+    -   Flashy or steep systems may require values closer to 0.25–0.60.
+    -   The backwards-filter method of @collischonn2013 provides a **data-driven estimate** of $BFImax$, reducing reliance on subjective selection.
+
+## References

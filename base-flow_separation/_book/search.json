@@ -1,0 +1,153 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Base-flow Separation",
+    "section": "",
+    "text": "Home\nWelcome! This is the home to tools and resources for conducting base-flow separation for use in the Springer Lab at NAU. Here we will discuss:\n\nThe basics of base flow\nWhat is base-flow separation?\nComputational techniques for base-flow separation",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "intro.html",
+    "href": "intro.html",
+    "title": "1  Introduction",
+    "section": "",
+    "text": "This is a book created from markdown and executable code.\nSee (knuth84?) for additional discussion of literate programming.\n\n1 + 1\n\n[1] 2",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "summary.html",
+    "href": "summary.html",
+    "title": "2  Summary",
+    "section": "",
+    "text": "In summary, this book has no content whatsoever.\n\n1 + 1\n\n[1] 2",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Summary</span>"
+    ]
+  },
+  {
+    "objectID": "lyne-hollick.html",
+    "href": "lyne-hollick.html",
+    "title": "2  Lyne-Hollick Filter",
+    "section": "",
+    "text": "2.1 Parameters",
+    "crumbs": [
+      "Fundamentals",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Lyne-Hollick Filter</span>"
+    ]
+  },
+  {
+    "objectID": "bf-basics.html",
+    "href": "bf-basics.html",
+    "title": "1  The Basics of Base Flow",
+    "section": "",
+    "text": "1.1 Base-flow Index\nBase-flow index (BFI) is a normalized measure of the contribution of base flow to total streamflow in a river. It’s values depend on the time period considered, and allows for the comparison of base-flow contribution in rivers of varying size and discharge.\nTo calculate a representative value for BFI, it is best to consider the longest time period viable for the desired analysis. That is, BFI can vary if calculated monthly vs. annually vs. long-term (multi-year).",
+    "crumbs": [
+      "Fundamentals",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>The Basics of Base Flow</span>"
+    ]
+  },
+  {
+    "objectID": "lyne-hollick.html#parameters",
+    "href": "lyne-hollick.html#parameters",
+    "title": "2  Lyne-Hollick Filter",
+    "section": "",
+    "text": "2.1.1 \\(\\alpha\\)\nThe filter parameter, \\(\\alpha\\), controls the attenuation of base-flow separation from the streamflow record.\nThe \\(\\alpha\\) is typically set between 0.90 and 0.95 [Nathan and McMahon (1990); ]. A higher value of \\(\\alpha\\) results in greater signal attenuation (lower base flow estimate), while a lower value allows for less signal attenuation (greater base flow estimate).\n\n\n2.1.2 Number of passes\nThe Lyne-Hollick filter can be applied in both forward and backward directions to minimize phase distortion2. Often, the filter passes over the streamflow data three times: forward, backwards, and forwards again.The number of passes determines the smoothness of the base flow estimate, with more passes resulting in a smoother base flow.",
+    "crumbs": [
+      "Fundamentals",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Lyne-Hollick Filter</span>"
+    ]
+  },
+  {
+    "objectID": "lyne-hollick.html#nota-bene",
+    "href": "lyne-hollick.html#nota-bene",
+    "title": "2  Lyne-Hollick Filter",
+    "section": "2.2 Nota Bene",
+    "text": "2.2 Nota Bene\n\nThe Lyne-Hollick filter is sensitive to the choice of \\(\\alpha\\), and it is recommended to test different values to find the most appropriate one for a given dataset.\n\nCommonly used values are between 0.90 and 0.95, but the optimal value may vary depending on the hydrological characteristics of the watershed being studied (Nathan and McMahon 1990).\n\nThe Lyne-Hollick filter is best suited for continuous streamflow records and may not perform well with datasets that have significant gaps or irregular sampling intervals\nThe filter may not accurately capture base flow during extreme hydrological events, such as floods or droughts, where the assumptions of slow base flow changes may be violated. (Lyne and Hollick 1979)\nThe filter does not have a physical basis and is purely a mathematical construct, which may limit its applicability in certain hydrological studies (Eckhardt 2008, 2023)\n\nHowever, the technique does provide objective, repeatable base-flow separation that is easily automated (Nathan and McMahon 1990).",
+    "crumbs": [
+      "Fundamentals",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Lyne-Hollick Filter</span>"
+    ]
+  },
+  {
+    "objectID": "lyne-hollick.html#references",
+    "href": "lyne-hollick.html#references",
+    "title": "2  Lyne-Hollick Filter",
+    "section": "2.3 References",
+    "text": "2.3 References\n\n\n\n\nEckhardt, K. 2008. “A Comparison of Baseflow Indices, Which Were Calculated with Seven Different Baseflow Separation Methods.” Journal of Hydrology 352 (1-2): 168–73. https://doi.org/10.1016/j.jhydrol.2008.01.005.\n\n\n———. 2023. “Technical Note: How Physically Based Is Hydrograph Separation by Recursive Digital Filtering?” Hydrology and Earth System Sciences 27 (2): 495–99. https://doi.org/10.5194/hess-27-495-2023.\n\n\nLyne, V, and M Hollick. 1979. “Stochastic Time-Variable Rainfall-Runoff Modeling.” In, 79:89–93. Barton, Australia: Institute of Engineers Australia.\n\n\nNathan, R. J., and T. A. McMahon. 1990. “Evaluation of Automated Techniques for Base Flow and Recession Analyses.” Water Resources Research 26 (7): 1465–73. https://doi.org/10.1029/WR026i007p01465.",
+    "crumbs": [
+      "Fundamentals",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Lyne-Hollick Filter</span>"
+    ]
+  },
+  {
+    "objectID": "lyne-hollick.html#footnotes",
+    "href": "lyne-hollick.html#footnotes",
+    "title": "2  Lyne-Hollick Filter",
+    "section": "",
+    "text": "In signal processing, a recursive filter is a type of filter which reuses one or more of its outputs as an input (eg. streamflow)↩︎\nAlteration of the signal’s shape by a filter modulating different frequencies by different amounts.↩︎",
+    "crumbs": [
+      "Fundamentals",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Lyne-Hollick Filter</span>"
+    ]
+  },
+  {
+    "objectID": "lyne-hollick.html#examples",
+    "href": "lyne-hollick.html#examples",
+    "title": "2  Lyne-Hollick Filter",
+    "section": "2.3 Examples",
+    "text": "2.3 Examples",
+    "crumbs": [
+      "Fundamentals",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Lyne-Hollick Filter</span>"
+    ]
+  },
+  {
+    "objectID": "example_LH.html",
+    "href": "example_LH.html",
+    "title": "3  Lyne-Hollick Filter Example",
+    "section": "",
+    "text": "3.1 Install packages\noptions(repos = c(CRAN = \"https://cloud.r-project.org\"))  # set mirror\ninstall.packages(c(\"grwat\", \"dataRetrieval\", \"dplyr\", \"sf\", \"ggplot2\"))\n\nlibrary(grwat)\nlibrary(dataRetrieval)\nlibrary(dplyr)\nlibrary(sf)\nlibrary(ggplot2)",
+    "crumbs": [
+      "Examples",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Lyne-Hollick Filter Example</span>"
+    ]
+  },
+  {
+    "objectID": "example_LH.html#load-dataset",
+    "href": "example_LH.html#load-dataset",
+    "title": "3  Lyne-Hollick Filter Example",
+    "section": "3.2 Load dataset",
+    "text": "3.2 Load dataset\nHere we load in a stream discharge dataset from a USGS streamgage using the DataRetrieval package. We are loading in stream discharge from the Verde River near Clarkdale, AZ streamgauge.\n\n# Download raw data from USGS NWIS\nverde_daily.raw &lt;- read_waterdata_daily(monitoring_location_id = \"USGS-09504000\",  # Verde River near Clarkdale, AZ\n                                        parameter_code = c(\"00060\"),              # discharge\n                                        statistic_id = \"00003\",                   # mean\n                                        time = c(\"2023-10-01\", \"2024-09-30\"))    # time range\n\n# Process data - convert from cfs to cms and select relevant columns\nverde_daily &lt;- verde_daily.raw |&gt;\n  st_drop_geometry() |&gt;\n  select(time, value) |&gt;\n  mutate(\n    discharge_cms = value / 35.3147   # cfs → cubic meters/ second\n  ) |&gt;\n  rename(date = time) |&gt;\n  select(date, discharge_cms)\n\n# View first few rows of processed data\nhead(verde_daily)\n\n# A tibble: 6 × 2\n  date       discharge_cms\n  &lt;date&gt;             &lt;dbl&gt;\n1 2023-10-01          1.94\n2 2023-10-02          1.98\n3 2023-10-03          2.00\n4 2023-10-04          2.00\n5 2023-10-05          1.99\n6 2023-10-06          1.96\n\n\nNow we will plot the hydrograph of daily discharge for the Verde River near Clarkdale, AZ.\n\n# Plot daily discharge time series\nggplot(verde_daily, aes(x = date, y = discharge_cms)) +\n  geom_line() +\n  scale_y_log10() + #log scale for better visualization\n  labs(\n    title = \"Daily Stream Discharge (log scale) - Verde River near Clarkdale, AZ\",\n    x = \"Date\",\n    y = \"Discharge (m³/s)\"\n  ) +\n  theme_bw()",
+    "crumbs": [
+      "Examples",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Lyne-Hollick Filter Example</span>"
+    ]
+  },
+  {
+    "objectID": "example_LH.html#conduct-base-flow-separation",
+    "href": "example_LH.html#conduct-base-flow-separation",
+    "title": "3  Lyne-Hollick Filter Example",
+    "section": "3.3 Conduct base-flow separation",
+    "text": "3.3 Conduct base-flow separation\nHere we apply the Lyne-Hollick filter using the grwat package to separate base flow from total streamflow. We will test different alpha parameters and number of passes to see how they affect the base-flow separation.\n\n# Apply Lyne-Hollick filter\nbase_flow &lt;- gr_baseflow(Q = verde_daily$discharge_cms,\n                         method = \"lynehollick\",\n                         padding = 100)\n\n# Combine base flow with original data\nverde_daily_bf &lt;- verde_daily %&gt;%\n  mutate(base_flow_cms = base_flow)\n\n# View first few rows of data with base flow\nhead(verde_daily_bf)\n\n# A tibble: 6 × 3\n  date       discharge_cms base_flow_cms\n  &lt;date&gt;             &lt;dbl&gt;         &lt;dbl&gt;\n1 2023-10-01          1.94          1.87\n2 2023-10-02          1.98          1.87\n3 2023-10-03          2.00          1.88\n4 2023-10-04          2.00          1.88\n5 2023-10-05          1.99          1.88\n6 2023-10-06          1.96          1.88\n\n# Plot original discharge and base flow\nggplot(verde_daily_bf, aes(x = date)) +\n  geom_line(aes(y = discharge_cms, color = \"Total Discharge\")) +\n  geom_line(aes(y = base_flow_cms, color = \"Base Flow\")) +\n  scale_y_log10() + #log scale for better visualization\n  labs(\n    title = \"Base Flow Separation using Lyne-Hollick Filter\",\n    x = \"Date\",\n    y = \"Discharge (m³/s)\",\n    color = \"Legend\"\n  ) +\n  theme_bw()\n\n\n\n\n\n\n\n\n\n3.3.1 Testing alpha parameters\nHere we test different alpha parameters (0.90, 0.925, 0.95) to see how they affect the base-flow separation. Generally we expect that a lower alpha will result in a higher base-flow estimate, while a higher alpha will result in a lower base-flow estimate.\n\n# Test different alpha parameters\nalpha_values &lt;- c(0.90, 0.925, 0.95)\nbase_flow_list &lt;- list()\n\nfor (alpha in alpha_values) {\n  base_flow_list[[as.character(alpha)]] &lt;- gr_baseflow(Q = verde_daily$discharge_cms,\n                                                       method = \"lynehollick\",\n                                                       a = alpha,\n                                                       padding = 100)\n}\n\n# Combine results into a single data frame for plotting\nverde_daily_bf_alpha &lt;- verde_daily %&gt;%\n  mutate(base_flow_0.90 = base_flow_list[[\"0.9\"]],\n         base_flow_0.925 = base_flow_list[[\"0.925\"]],\n         base_flow_0.95 = base_flow_list[[\"0.95\"]])\n\n# Plot base flow for different alpha values\nggplot(verde_daily_bf_alpha, aes(x = date)) +\n  geom_line(aes(y = discharge_cms, color = \"Total Discharge\"), color = 'black') +\n  geom_line(aes(y = base_flow_0.90, color = \"Alpha = 0.90\")) +\n  geom_line(aes(y = base_flow_0.925, color = \"Alpha = 0.925\")) +\n  geom_line(aes(y = base_flow_0.95, color = \"Alpha = 0.95\")) +\n  scale_y_log10() + #log scale for better visualization\n  labs(\n    title = \"Base Flow Separation with Different Alpha Values\",\n    x = \"Date\",\n    y = \"Base Flow (m³/s)\",\n    color = \"Alpha Value\"\n  ) +\n  theme_bw()\n\n\n\n\n\n\n\n\nWe can see in the hydrograph above that the alpha parameter significantly affects the base-flow estimate. A lower alpha (0.90) results in a higher base-flow estimate, while a higher alpha (0.95) results in a lower base-flow estimate.\nIf possible, compare the results with known hydrological characteristics of the watershed to determine the most appropriate alpha value for this dataset. When lacking accurate local measurements, consider using a commonly accepted value such as 0.925.\n\n\n3.3.2 Testing number of passes\nHere we test how the number of passes (forward only, forward-backward, forward-backward-forward) affects the base-flow separation. Typically, the passes will effect the smoothness of the base-flow estimate.\n\n# Test different number of passes\npasses_values &lt;- c(1, 2, 3)\nbase_flow_passes_list &lt;- list()\n\nfor (passes in passes_values) {\n  base_flow_passes_list[[as.character(passes)]] &lt;- gr_baseflow(Q = verde_daily$discharge_cms,\n                                                               method = \"lynehollick\",\n                                                               passes = passes,\n                                                               padding = 100)\n}\n\n# Combine results into a single data frame for plotting\nverde_daily_bf_passes &lt;- verde_daily %&gt;%\n  mutate(base_flow_1pass = base_flow_passes_list[[\"1\"]],\n         base_flow_2pass = base_flow_passes_list[[\"2\"]],\n         base_flow_3pass = base_flow_passes_list[[\"3\"]])\n\n# Plot base flow for different number of passes\nggplot(verde_daily_bf_passes, aes(x = date)) +\n  geom_line(aes(y = discharge_cms, color = \"Total Discharge\"), color = 'black') +\n  geom_line(aes(y = base_flow_1pass, color = \"1 Pass\")) +\n  geom_line(aes(y = base_flow_2pass, color = \"2 Passes\")) +\n  geom_line(aes(y = base_flow_3pass, color = \"3 Passes\")) +\n  scale_y_log10() + #log scale for better visualization\n  labs(\n    title = \"Base Flow Separation with Different Number of Passes\",\n    x = \"Date\",\n    y = \"Base Flow (m³/s)\",\n    color = \"Number of Passes\"\n  ) +\n  theme_bw()\n\n\n\n\n\n\n\n\nIn the hydrograph above, we see that varying the number of passes affects the smoothness and magnitude of the base-flow estimate. During periods of increased quick flow, more passes tend to produce a smoother base-flow estimate.\nWhen selecting the number of passes, consider the desired balance between capturing quick flow variations and obtaining a smooth base-flow estimate. A commonly accepted method is to use three passes (forward-backward-forward) for a balanced approach.",
+    "crumbs": [
+      "Examples",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Lyne-Hollick Filter Example</span>"
+    ]
+  },
+  {
+    "objectID": "example_LH.html#calculating-base-flow-index-bfi",
+    "href": "example_LH.html#calculating-base-flow-index-bfi",
+    "title": "3  Lyne-Hollick Filter Example",
+    "section": "3.4 Calculating base-flow index (BFI)",
+    "text": "3.4 Calculating base-flow index (BFI)\nBase-flow index (BFI) is a normalized measure of the contribution of base flow to total streamflow in a river. It is calculated as the ratio of total base flow to total streamflow over a specified time period.\n\n# Calculate total base flow and total streamflow\ntotal_base_flow &lt;- sum(verde_daily_bf$base_flow_cms, na.rm = TRUE)\ntotal_streamflow &lt;- sum(verde_daily_bf$discharge_cms, na.rm = TRUE)\n\n# Calculate BFI\nbfi &lt;- total_base_flow / total_streamflow\n\nThe calculated BFI for the Verde River near Clarkdale, AZ over the specified time period is 0.886. This indicates that approximately 88.6% of the total streamflow is contributed by base flow during this time period (October 1, 2023 to September 30, 2024).",
+    "crumbs": [
+      "Examples",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Lyne-Hollick Filter Example</span>"
+    ]
+  }
+]

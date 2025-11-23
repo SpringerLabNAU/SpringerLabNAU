@@ -1,0 +1,9 @@
+# Home {.unnumbered}
+
+Welcome! This is the home to tools and resources for conducting base-flow separation for use in the Springer Lab at NAU. Here we will discuss:
+
+1.  The basics of **base flow**
+
+2.  What is base-flow separation?
+
+3.  Computational techniques for base-flow separation

@@ -3,7 +3,7 @@
 *Understanding groundwater, karst, and springs across the Southwest.*
 
 
-<img src="Images/SpringerLabs_Final.png" alt="lab logo" width="200"/>
+<img src="Images/SpringerLabs_Final.png" alt="lab logo" width="400"/>
 
 ## 🧭 About
 
@@ -29,7 +29,8 @@ To improve understanding of **groundwater–surface water interactions**, **kars
 
 ### **Principal Investigator**
 
-![](Images/Abe_image.jpg){width="204"}
+
+<img src="(Images/Abe_image.jpg" alt="Abe" width="300"/>
 
 **Dr. Abe Springer**\
 *Professor of Ecohydrogeology, School of Earth & Sustainability*\
@@ -38,12 +39,13 @@ Research interests: Karst hydrogeology, groundwater-surface water interactions, 
 
 ### **Current Members**
 
-![](Images/Ryan_image.jpeg){width="203"}
+
+<img src="(Images/Images/Ryan_image.jpeg" alt="Ryan" width="300"/>
 
 -   **Ryan Lima, Ph.D.** – *Postdoctoral Scholar*\
     *Mapping and modeling landscape-scale groundwater recharge in Arizona’s karst terrains.*\
 
-![](Images/Caelum_image.jpg){width="191"}
+<img src="(Images/ImagesCaelum_image.jpg" alt="Caelum" width="300"/>
 
 -   **Caelum Mroczek** – *Ph.D. Candidate*\
     *Using AI/ML to quantify base flow and aquifer connectivity in arid regions.*

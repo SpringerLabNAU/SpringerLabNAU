@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>eckhardt – Base-flow Separation</title>
+<title>Eckhardt Filter – Base-flow Separation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -195,7 +195,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">eckhardt</h1>
+<h1 class="title">Eckhardt Filter</h1>
 </div>
 
 
@@ -212,8 +212,6 @@ window.Quarto = {
 </header>
 
 
-<section id="eckhardt-filter" class="level1">
-<h1>Eckhardt Filter</h1>
 <p>The Eckhardt digital filter is a widely used two-parameter method for separating base flow from total streamflow. Introduced by <span class="citation" data-cites="eckhardt2005">Eckhardt (<a href="#ref-eckhardt2005" role="doc-biblioref">2005</a>)</span>, it improves upon one-parameter filters such as Lyne–Hollick by explicitly incorporating watershed characteristics through the maximum base-flow index (<span class="math inline">\(BFImax\)</span>).</p>
 <p>The Eckhardt filter is recursive and produces a base-flow time series that varies smoothly with discharge. The method is applied forward in time, and performance depends on the appropriate choice of its two parameters: the recession constant (<span class="math inline">\(\alpha\)</span>) and the maximum base-flow index (<span class="math inline">\(BFImax\)</span>).</p>
 <p>The equation for the Eckhardt filter is as follows: <span class="math display">\[
@@ -256,7 +254,7 @@ where <span class="math inline">\(b\)</span> is base flow, <span class="math inl
 <ul>
 <li>Highly permeable, perennial systems often justify <span class="math inline">\(BFImax\)</span> in the range 0.80–0.95.</li>
 <li>Flashy or steep systems may require values closer to 0.25–0.60.</li>
-<li>The backwards-filter method of Collischonn &amp; Fan (2013) provides a <strong>data-driven estimate</strong> of <span class="math inline">\(BFImax\)</span>, reducing reliance on subjective selection.</li>
+<li>The backwards-filter method of <span class="citation" data-cites="collischonn2013">Collischonn and Fan (<a href="#ref-collischonn2013" role="doc-biblioref">2013</a>)</span> provides a <strong>data-driven estimate</strong> of <span class="math inline">\(BFImax\)</span>, reducing reliance on subjective selection.</li>
 </ul></li>
 </ul>
 </section>
@@ -265,7 +263,6 @@ where <span class="math inline">\(b\)</span> is base flow, <span class="math inl
 
 
 
-</section>
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">

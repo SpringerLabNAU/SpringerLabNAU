@@ -1,0 +1,184 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Home",
+    "section": "",
+    "text": "Home\nWelcome! This is the home to tools and resources for conducting base-flow separation for use in the Springer Lab at NAU. Here we will discuss:\n\nThe basics of base flow\nWhat is base-flow separation?\nComputational techniques for base-flow separation"
+  },
+  {
+    "objectID": "example_LH.html",
+    "href": "example_LH.html",
+    "title": "Lyne-Hollick Filter Example",
+    "section": "",
+    "text": "In this example, we will demonstrate how to use the Lyne-Hollick filter for base-flow separation using the grwat package in R. We will download daily stream discharge data from a USGS streamgage, apply the Lyne-Hollick filter, and visualize the results."
+  },
+  {
+    "objectID": "example_LH.html#install-packages",
+    "href": "example_LH.html#install-packages",
+    "title": "Lyne-Hollick Filter Example",
+    "section": "Install packages",
+    "text": "Install packages\n\noptions(repos = c(CRAN = \"https://cloud.r-project.org\"))  # set mirror\ninstall.packages(c(\"grwat\", \"dataRetrieval\", \"dplyr\", \"sf\", \"ggplot2\"))\n\nlibrary(grwat)\nlibrary(dataRetrieval)\nlibrary(dplyr)\nlibrary(sf)\nlibrary(ggplot2)"
+  },
+  {
+    "objectID": "example_LH.html#load-dataset",
+    "href": "example_LH.html#load-dataset",
+    "title": "Lyne-Hollick Filter Example",
+    "section": "Load dataset",
+    "text": "Load dataset\nHere we load in a stream discharge dataset from a USGS streamgage using the DataRetrieval package. We are loading in stream discharge from the Verde River near Clarkdale, AZ streamgauge.\n\n# Download raw data from USGS NWIS\nverde_daily.raw &lt;- read_waterdata_daily(monitoring_location_id = \"USGS-09504000\",  # Verde River near Clarkdale, AZ\n                                        parameter_code = c(\"00060\"),              # discharge\n                                        statistic_id = \"00003\",                   # mean\n                                        time = c(\"2023-10-01\", \"2024-09-30\"))    # time range\n\n# Process data - convert from cfs to cms and select relevant columns\nverde_daily &lt;- verde_daily.raw |&gt;\n  st_drop_geometry() |&gt;\n  select(time, value) |&gt;\n  mutate(\n    discharge_cms = value / 35.3147   # cfs → cubic meters/ second\n  ) |&gt;\n  rename(date = time) |&gt;\n  select(date, discharge_cms)\n\n# View first few rows of processed data\nhead(verde_daily)\n\n# A tibble: 6 × 2\n  date       discharge_cms\n  &lt;date&gt;             &lt;dbl&gt;\n1 2023-10-01          1.94\n2 2023-10-02          1.98\n3 2023-10-03          2.00\n4 2023-10-04          2.00\n5 2023-10-05          1.99\n6 2023-10-06          1.96\n\n\nNow we will plot the hydrograph of daily discharge for the Verde River near Clarkdale, AZ.\n\n# Plot daily discharge time series\nggplot(verde_daily, aes(x = date, y = discharge_cms)) +\n  geom_line() +\n  scale_y_log10() + #log scale for better visualization\n  labs(\n    title = \"Daily Stream Discharge (log scale) - Verde River near Clarkdale, AZ\",\n    x = \"Date\",\n    y = \"Discharge (m³/s)\"\n  ) +\n  theme_bw()"
+  },
+  {
+    "objectID": "example_LH.html#conduct-base-flow-separation",
+    "href": "example_LH.html#conduct-base-flow-separation",
+    "title": "Lyne-Hollick Filter Example",
+    "section": "Conduct base-flow separation",
+    "text": "Conduct base-flow separation\nHere we apply the Lyne-Hollick filter using the grwat package to separate base flow from total streamflow. We will test different alpha parameters and number of passes to see how they affect the base-flow separation.\n\n# Apply Lyne-Hollick filter\nbase_flow &lt;- gr_baseflow(Q = verde_daily$discharge_cms,\n                         method = \"lynehollick\",\n                         padding = 100)\n\n# Combine base flow with original data\nverde_daily_bf &lt;- verde_daily %&gt;%\n  mutate(base_flow_cms = base_flow)\n\n# View first few rows of data with base flow\nhead(verde_daily_bf)\n\n# A tibble: 6 × 3\n  date       discharge_cms base_flow_cms\n  &lt;date&gt;             &lt;dbl&gt;         &lt;dbl&gt;\n1 2023-10-01          1.94          1.87\n2 2023-10-02          1.98          1.87\n3 2023-10-03          2.00          1.88\n4 2023-10-04          2.00          1.88\n5 2023-10-05          1.99          1.88\n6 2023-10-06          1.96          1.88\n\n# Plot original discharge and base flow\nggplot(verde_daily_bf, aes(x = date)) +\n  geom_line(aes(y = discharge_cms, color = \"Total Discharge\")) +\n  geom_line(aes(y = base_flow_cms, color = \"Base Flow\")) +\n  scale_y_log10() + #log scale for better visualization\n  labs(\n    title = \"Base Flow Separation using Lyne-Hollick Filter\",\n    x = \"Date\",\n    y = \"Discharge (m³/s)\",\n    color = \"Legend\"\n  ) +\n  theme_bw()\n\n\n\n\n\n\n\n\n\nTesting alpha parameters\nHere we test different alpha parameters (0.90, 0.925, 0.95) to see how they affect the base-flow separation. Generally we expect that a lower alpha will result in a higher base-flow estimate, while a higher alpha will result in a lower base-flow estimate.\n\n# Test different alpha parameters\nalpha_values &lt;- c(0.90, 0.925, 0.95)\nbase_flow_list &lt;- list()\n\nfor (alpha in alpha_values) {\n  base_flow_list[[as.character(alpha)]] &lt;- gr_baseflow(Q = verde_daily$discharge_cms,\n                                                       method = \"lynehollick\",\n                                                       a = alpha,\n                                                       padding = 100)\n}\n\n# Combine results into a single data frame for plotting\nverde_daily_bf_alpha &lt;- verde_daily %&gt;%\n  mutate(base_flow_0.90 = base_flow_list[[\"0.9\"]],\n         base_flow_0.925 = base_flow_list[[\"0.925\"]],\n         base_flow_0.95 = base_flow_list[[\"0.95\"]])\n\n# Plot base flow for different alpha values\nggplot(verde_daily_bf_alpha, aes(x = date)) +\n  geom_line(aes(y = discharge_cms, color = \"Total Discharge\"), color = 'black') +\n  geom_line(aes(y = base_flow_0.90, color = \"Alpha = 0.90\")) +\n  geom_line(aes(y = base_flow_0.925, color = \"Alpha = 0.925\")) +\n  geom_line(aes(y = base_flow_0.95, color = \"Alpha = 0.95\")) +\n  scale_y_log10() + #log scale for better visualization\n  labs(\n    title = \"Base Flow Separation with Different Alpha Values\",\n    x = \"Date\",\n    y = \"Base Flow (m³/s)\",\n    color = \"Alpha Value\"\n  ) +\n  theme_bw()\n\n\n\n\n\n\n\n\nWe can see in the hydrograph above that the alpha parameter significantly affects the base-flow estimate. A lower alpha (0.90) results in a higher base-flow estimate, while a higher alpha (0.95) results in a lower base-flow estimate.\nIf possible, compare the results with known hydrological characteristics of the watershed to determine the most appropriate alpha value for this dataset. When lacking accurate local measurements, consider using a commonly accepted value such as 0.925.\n\n\nTesting number of passes\nHere we test how the number of passes (forward only, forward-backward, forward-backward-forward) affects the base-flow separation. Typically, the passes will effect the smoothness of the base-flow estimate.\n\n# Test different number of passes\npasses_values &lt;- c(1, 2, 3)\nbase_flow_passes_list &lt;- list()\n\nfor (passes in passes_values) {\n  base_flow_passes_list[[as.character(passes)]] &lt;- gr_baseflow(Q = verde_daily$discharge_cms,\n                                                               method = \"lynehollick\",\n                                                               passes = passes,\n                                                               padding = 100)\n}\n\n# Combine results into a single data frame for plotting\nverde_daily_bf_passes &lt;- verde_daily %&gt;%\n  mutate(base_flow_1pass = base_flow_passes_list[[\"1\"]],\n         base_flow_2pass = base_flow_passes_list[[\"2\"]],\n         base_flow_3pass = base_flow_passes_list[[\"3\"]])\n\n# Plot base flow for different number of passes\nggplot(verde_daily_bf_passes, aes(x = date)) +\n  geom_line(aes(y = discharge_cms, color = \"Total Discharge\"), color = 'black') +\n  geom_line(aes(y = base_flow_1pass, color = \"1 Pass\")) +\n  geom_line(aes(y = base_flow_2pass, color = \"2 Passes\")) +\n  geom_line(aes(y = base_flow_3pass, color = \"3 Passes\")) +\n  scale_y_log10() + #log scale for better visualization\n  labs(\n    title = \"Base Flow Separation with Different Number of Passes\",\n    x = \"Date\",\n    y = \"Base Flow (m³/s)\",\n    color = \"Number of Passes\"\n  ) +\n  theme_bw()\n\n\n\n\n\n\n\n\nIn the hydrograph above, we see that varying the number of passes affects the smoothness and magnitude of the base-flow estimate. During periods of increased quick flow, more passes tend to produce a smoother base-flow estimate.\nWhen selecting the number of passes, consider the desired balance between capturing quick flow variations and obtaining a smooth base-flow estimate. A commonly accepted method is to use three passes (forward-backward-forward) for a balanced approach."
+  },
+  {
+    "objectID": "example_LH.html#calculating-base-flow-index-bfi",
+    "href": "example_LH.html#calculating-base-flow-index-bfi",
+    "title": "Lyne-Hollick Filter Example",
+    "section": "Calculating base-flow index (BFI)",
+    "text": "Calculating base-flow index (BFI)\nBase-flow index (BFI) is a normalized measure of the contribution of base flow to total streamflow in a river. It is calculated as the ratio of total base flow to total streamflow over a specified time period.\n\n# Calculate total base flow and total streamflow\ntotal_base_flow &lt;- sum(verde_daily_bf$base_flow_cms, na.rm = TRUE)\ntotal_streamflow &lt;- sum(verde_daily_bf$discharge_cms, na.rm = TRUE)\n\n# Calculate BFI\nbfi &lt;- total_base_flow / total_streamflow\n\nThe calculated BFI for the Verde River near Clarkdale, AZ over the specified time period is 0.886. This indicates that approximately 88.6% of the total streamflow is contributed by base flow during this time period (October 1, 2023 to September 30, 2024)."
+  },
+  {
+    "objectID": "lyne-hollick.html",
+    "href": "lyne-hollick.html",
+    "title": "Lyne-Hollick Filter",
+    "section": "",
+    "text": "The Lyne-Hollick digital filter technique was first suggested in 1979 (Lyne and Hollick 1979). The technique is derived from signal analysis, namely high-pass filters where the signal (streamflow) is separated into high-frequency (quick flow) and low-frequency (base flow) components.\nThis recursive digital filter1 that uses a single parameter, alpha (\\(\\alpha\\)) , to control the separation between base flow and quick flow. The filter is applied in both forward and backward directions to minimize phase distortion.\nThe equations for the Lyne-Hollick filter are as follows:\n\\[\nb = \\alpha b_{k-1} + \\frac{1-\\alpha}{2}(Q_k + Q_{k-1})\n\\]\nwhere \\(b\\) is base flow, \\(\\alpha\\) is the filter parameter, \\(Q\\) is the total streamflow, and \\(k\\) is the time step.\n\n\n\n\nThe filter parameter, \\(\\alpha\\), controls the attenuation of base-flow separation from the streamflow record.\nThe \\(\\alpha\\) is typically set between 0.90 and 0.95 [Nathan and McMahon (1990); ]. A higher value of \\(\\alpha\\) results in greater signal attenuation (lower base flow estimate), while a lower value allows for less signal attenuation (greater base flow estimate).\n\n\n\nThe Lyne-Hollick filter can be applied in both forward and backward directions to minimize phase distortion2. Often, the filter passes over the streamflow data three times: forward, backwards, and forwards again.The number of passes determines the smoothness of the base flow estimate, with more passes resulting in a smoother base flow.\n\n\n\n\n\nThe Lyne-Hollick filter is sensitive to the choice of \\(\\alpha\\), and it is recommended to test different values to find the most appropriate one for a given dataset.\n\nCommonly used values are between 0.90 and 0.95, but the optimal value may vary depending on the hydrological characteristics of the watershed being studied (Nathan and McMahon 1990).\n\nThe Lyne-Hollick filter is best suited for continuous streamflow records and may not perform well with datasets that have significant gaps or irregular sampling intervals\nThe filter may not accurately capture base flow during extreme hydrological events, such as floods or droughts, where the assumptions of slow base flow changes may be violated. (Lyne and Hollick 1979)\nThe filter does not have a physical basis and is purely a mathematical construct, which may limit its applicability in certain hydrological studies (Eckhardt 2008, 2023)\n\nHowever, the technique does provide objective, repeatable base-flow separation that is easily automated (Nathan and McMahon 1990)."
+  },
+  {
+    "objectID": "lyne-hollick.html#parameters",
+    "href": "lyne-hollick.html#parameters",
+    "title": "Lyne-Hollick Filter",
+    "section": "",
+    "text": "The filter parameter, \\(\\alpha\\), controls the attenuation of base-flow separation from the streamflow record.\nThe \\(\\alpha\\) is typically set between 0.90 and 0.95 [Nathan and McMahon (1990); ]. A higher value of \\(\\alpha\\) results in greater signal attenuation (lower base flow estimate), while a lower value allows for less signal attenuation (greater base flow estimate).\n\n\n\nThe Lyne-Hollick filter can be applied in both forward and backward directions to minimize phase distortion2. Often, the filter passes over the streamflow data three times: forward, backwards, and forwards again.The number of passes determines the smoothness of the base flow estimate, with more passes resulting in a smoother base flow."
+  },
+  {
+    "objectID": "lyne-hollick.html#nota-bene",
+    "href": "lyne-hollick.html#nota-bene",
+    "title": "Lyne-Hollick Filter",
+    "section": "",
+    "text": "The Lyne-Hollick filter is sensitive to the choice of \\(\\alpha\\), and it is recommended to test different values to find the most appropriate one for a given dataset.\n\nCommonly used values are between 0.90 and 0.95, but the optimal value may vary depending on the hydrological characteristics of the watershed being studied (Nathan and McMahon 1990).\n\nThe Lyne-Hollick filter is best suited for continuous streamflow records and may not perform well with datasets that have significant gaps or irregular sampling intervals\nThe filter may not accurately capture base flow during extreme hydrological events, such as floods or droughts, where the assumptions of slow base flow changes may be violated. (Lyne and Hollick 1979)\nThe filter does not have a physical basis and is purely a mathematical construct, which may limit its applicability in certain hydrological studies (Eckhardt 2008, 2023)\n\nHowever, the technique does provide objective, repeatable base-flow separation that is easily automated (Nathan and McMahon 1990)."
+  },
+  {
+    "objectID": "lyne-hollick.html#footnotes",
+    "href": "lyne-hollick.html#footnotes",
+    "title": "Lyne-Hollick Filter",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nIn signal processing, a recursive filter is a type of filter which reuses one or more of its outputs as an input (eg. streamflow)↩︎\nAlteration of the signal’s shape by a filter modulating different frequencies by different amounts.↩︎"
+  },
+  {
+    "objectID": "bf-basics.html",
+    "href": "bf-basics.html",
+    "title": "The Basics of Base Flow",
+    "section": "",
+    "text": "Conceptual figure of regional groundwater flow discharging into streams (base flow). Adapted from Barlow & Leake (2012).\n\n\nBase flow is the\n\n\nBase-flow index (BFI) is a normalized measure of the contribution of base flow to total streamflow in a river. It’s values depend on the time period considered, and allows for the comparison of base-flow contribution in rivers of varying size and discharge.\nTo calculate a representative value for BFI, it is best to consider the longest time period viable for the desired analysis. That is, BFI can vary if calculated monthly vs. annually vs. long-term (multi-year)."
+  },
+  {
+    "objectID": "bf-basics.html#base-flow-index",
+    "href": "bf-basics.html#base-flow-index",
+    "title": "The Basics of Base Flow",
+    "section": "",
+    "text": "Base-flow index (BFI) is a normalized measure of the contribution of base flow to total streamflow in a river. It’s values depend on the time period considered, and allows for the comparison of base-flow contribution in rivers of varying size and discharge.\nTo calculate a representative value for BFI, it is best to consider the longest time period viable for the desired analysis. That is, BFI can vary if calculated monthly vs. annually vs. long-term (multi-year)."
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "References"
+  },
+  {
+    "objectID": "example_Eck.html",
+    "href": "example_Eck.html",
+    "title": "Eckhardt Filter Example",
+    "section": "",
+    "text": "In this example, we will demonstrate how to use the Eckhardt filter for base-flow separation using the FlowScreen package in R. We will download daily stream discharge data from a USGS streamgauge, estimate required parameters, apply the Eckhardt filter, and visualize the results."
+  },
+  {
+    "objectID": "example_Eck.html#install-packages",
+    "href": "example_Eck.html#install-packages",
+    "title": "Eckhardt Filter Example",
+    "section": "Install packages",
+    "text": "Install packages\n\noptions(repos = c(CRAN = \"https://cloud.r-project.org\"))  # set mirror\ninstall.packages(c(\"grwat\", \"dataRetrieval\", \"dplyr\", \"sf\", \"ggplot2\"))\n\nlibrary(grwat)\nlibrary(dataRetrieval)\nlibrary(dplyr)\nlibrary(sf)\nlibrary(ggplot2)"
+  },
+  {
+    "objectID": "example_Eck.html#load-dataset",
+    "href": "example_Eck.html#load-dataset",
+    "title": "Eckhardt Filter Example",
+    "section": "Load dataset",
+    "text": "Load dataset\nHere we load in a stream discharge dataset from a USGS streamgage using the DataRetrieval package. We are loading in stream discharge from the Verde River near Clarkdale, AZ streamgauge.\n\n# Download raw data from USGS NWIS\nverde_daily.raw &lt;- read_waterdata_daily(monitoring_location_id = \"USGS-09504000\", # Verde River near Clarkdale, AZ\n                                        parameter_code = c(\"00060\"),              # discharge\n                                        statistic_id = \"00003\",                   # mean\n                                        time = c(\"2023-10-01\", \"2024-09-30\"))     # time range\n\n# Process data - convert from cfs to cms and select relevant columns\nverde_daily &lt;- verde_daily.raw |&gt;\n  st_drop_geometry() |&gt;\n  select(time, value) |&gt;\n  mutate(\n    discharge_cms = value / 35.3147   # cfs → cubic meters/ second\n  ) |&gt;\n  rename(date = time) |&gt;\n  select(date, discharge_cms)\n\nNow we will plot the hydrograph of daily discharge for the Verde River near Clarkdale, AZ.\n\n# Plot daily discharge time series\nggplot(verde_daily, aes(x = date, y = discharge_cms)) +\n  geom_line() +\n  scale_y_log10() + #log scale for better visualization\n  labs(\n    title = \"Daily Stream Discharge (log scale) - Verde River near Clarkdale, AZ\",\n    x = \"Date\",\n    y = \"Discharge (m³/s)\"\n  ) +\n  theme_bw()"
+  },
+  {
+    "objectID": "example_Eck.html#conduct-base-flow-separation",
+    "href": "example_Eck.html#conduct-base-flow-separation",
+    "title": "Eckhardt Filter Example",
+    "section": "Conduct base-flow separation",
+    "text": "Conduct base-flow separation\nHere we will estimate the required parameters for the Eckhardt filter and then apply the filter to the discharge data.\n\nEstimate parameters\nThe Eckhardt filter requires two parameters:\n\nthe recession constant (\\(\\alpha\\)), which we estimate from an observed recession segment of the hydrograph, and\n\nthe maximum base-flow index, (\\(\\text{BFI}\\_{\\max}\\)), which we estimate using the backwards-filter approach of Collischonn and Fan (2013).\n\n\nEstimate recession constant (\\(\\alpha\\))\nWe first select a relatively clean recession period (low variability, often summer pre-monsoon) and fit a linear model to (\\(\\log(Q)\\)) versus time.\nFor an exponential recession \\(Q_t\\) = \\(Q_0\\)\\(\\alpha^t\\), the fitted line of \\(\\log(Q)\\) versus \\(t\\) has a slope of \\(\\log(\\alpha)\\). Therefore, \\[\n\\alpha = e^{\\text{slope}}\n\\]\n\nlibrary(dplyr)\n\n## Select a recession period (adjust dates as needed)\nverde_recession &lt;- verde_daily |&gt;\n  filter(\n    date &gt;= as.Date(\"2024-05-01\"),\n    date &lt;= as.Date(\"2024-06-15\"),\n    discharge_cms &gt; 0\n  ) |&gt;\n  mutate(\n    t = as.numeric(date - min(date)),   # time in days since start of recession\n    log_q = log(discharge_cms)\n  )\n\n# Fit log(Q) ~ t to estimate recession constant alpha\nrec_lm &lt;- lm(log_q ~ t, data = verde_recession)\nalpha_est &lt;- exp(coef(rec_lm)[[\"t\"]])   # recession constant\n\nalpha_est\n\n[1] 0.9955225\n\n\n\n\nEstimate BFImax\nWe estimate BFImax using the backwards-filter method (Collischonn and Fan 2013). This method involves recursively estimating base flow backwards through the discharge record using the recession constant (\\(\\alpha\\)) estimated in the previous step.\n\n# Estimate BFImax using the Collischonn backwards-filter method\nQ &lt;- verde_daily$discharge_cms\nn &lt;- length(Q)\na &lt;- alpha_est          # recession constant from previous step\n\n# Initialize backwards baseflow array\nb_back &lt;- numeric(n)\nb_back[n] &lt;- Q[n]       # assume last day is baseflow-dominated\n\nfor (i in seq(from = n, to = 2)) {\n  b_candidate   &lt;- b_back[i] / a\n  b_back[i - 1] &lt;- min(b_candidate, Q[i - 1])\n}\n\n# Collischonn estimate of BFImax\nBFImax_est &lt;- sum(b_back, na.rm = TRUE) / sum(Q, na.rm = TRUE)\nBFImax_est\n\n[1] 0.9020147\n\n\nWe can then pass alpha_est and BFImax_est into the Eckhardt filter.\n\n\n\nApply Eckhardt filter\n\nlibrary(FlowScreen)\n\nbase_flow &lt;- bf_eckhardt(verde_daily$discharge_cms,\n                              a = alpha_est,    # recession constant\n                              BFI= BFImax_est) # maximum base-flow index\n# Combine base flow with original data\nverde_daily_bf &lt;- verde_daily %&gt;%\n  mutate(base_flow_cms = base_flow)\n\n# View first few rows of data with base flow\nhead(verde_daily_bf)\n\n# A tibble: 6 × 3\n  date       discharge_cms base_flow_cms\n  &lt;date&gt;             &lt;dbl&gt;         &lt;dbl&gt;\n1 2023-10-01          1.94          1.94\n2 2023-10-02          1.98          1.93\n3 2023-10-03          2.00          1.92\n4 2023-10-04          2.00          1.92\n5 2023-10-05          1.99          1.91\n6 2023-10-06          1.96          1.91\n\n# Plot original discharge and base flow\nggplot(verde_daily_bf, aes(x = date)) +\n  geom_line(aes(y = discharge_cms, color = \"Total Discharge\")) +\n  geom_line(aes(y = base_flow_cms, color = \"Base Flow\")) +\n  scale_y_log10() + #log scale for better visualization\n  labs(\n    title = \"Base Flow Separation using Eckhardt Filter\",\n    x = \"Date\",\n    y = \"Discharge (m³/s)\",\n    color = \"Legend\"\n  ) +\n  theme_bw()"
+  },
+  {
+    "objectID": "example_Eck.html#calculate-bfi",
+    "href": "example_Eck.html#calculate-bfi",
+    "title": "Eckhardt Filter Example",
+    "section": "Calculate BFI",
+    "text": "Calculate BFI\nFinally, we can calculate the base-flow index (BFI) for the period of record as the ratio of total base flow to total discharge.\n\ntotal_base_flow &lt;- sum(verde_daily_bf$base_flow_cms, na.rm = TRUE)\ntotal_discharge &lt;- sum(verde_daily_bf$discharge_cms, na.rm = TRUE)\n\nBFI &lt;- total_base_flow / total_discharge\n\nThe BFI for the Verde River near Clarkdale, AZ is 0.874 using the Eckhardt filter."
+  },
+  {
+    "objectID": "packages.html",
+    "href": "packages.html",
+    "title": "packages",
+    "section": "",
+    "text": "The dataRetrieval package is used to access hydrological data from various sources, including the USGS National Water Information System (NWIS). It provides functions to download stream discharge data, water quality data, and other hydrological measurements.\nFor more information, visit the dataRetrieval CRAN page or the dataRetrieval GitHub Page."
+  },
+  {
+    "objectID": "packages.html#dataretrieval",
+    "href": "packages.html#dataretrieval",
+    "title": "packages",
+    "section": "",
+    "text": "The dataRetrieval package is used to access hydrological data from various sources, including the USGS National Water Information System (NWIS). It provides functions to download stream discharge data, water quality data, and other hydrological measurements.\nFor more information, visit the dataRetrieval CRAN page or the dataRetrieval GitHub Page."
+  },
+  {
+    "objectID": "packages.html#grwat",
+    "href": "packages.html#grwat",
+    "title": "packages",
+    "section": "grwat",
+    "text": "grwat\nThe grwat package provides tools for hydrological analysis, including base-flow separation using the Lyne-Hollick filter.\n\nUsage\nHere is a basic example of how to use the grwat package to perform base-flow separation using the Lyne-Hollick filter:\nlibrary(grwat)\n# Assuming 'discharge_data' is a data frame with a 'date' column and a 'discharge' column\nbase_flow &lt;- gr_baseflow(Q = discharge_data$discharge,\n                         method = \"lynehollick\",\n                         a = 0.95, # alpha parameter\n                         padding = 100)\nThis will return a vector of base-flow estimates that you can then combine with your original data for further analysis or visualization."
+  },
+  {
+    "objectID": "packages.html#flowscreen",
+    "href": "packages.html#flowscreen",
+    "title": "packages",
+    "section": "FlowScreen",
+    "text": "FlowScreen\nThe FlowScreen package is another tool that can be used for hydrological data analysis, including the Eckhardt filter. It provides various functions for processing and analyzing streamflow data.\n\nUsage\nHere is a basic example of how to use the FlowScreen package to perform base-flow separation using the Eckhardt method:\nlibrary(FlowScreen)\n# Assuming 'discharge_data' is a data frame with a 'date' column and a 'discharge' column\nbase_flow &lt;- EckhardtBaseflow(discharge_data$discharge,\n                              a = 0.98, # alpha parameter\n                              BFImax = 0.8) # maximum base-flow index\nThis will return a vector of base-flow estimates that you can then combine with your original data for further analysis or visualization."
+  },
+  {
+    "objectID": "lyne-hollick.html#considerations",
+    "href": "lyne-hollick.html#considerations",
+    "title": "Lyne-Hollick Filter",
+    "section": "",
+    "text": "The Lyne-Hollick filter is sensitive to the choice of \\(\\alpha\\), and it is recommended to test different values to find the most appropriate one for a given dataset.\n\nCommonly used values are between 0.90 and 0.95, but the optimal value may vary depending on the hydrological characteristics of the watershed being studied (Nathan and McMahon 1990).\n\nThe Lyne-Hollick filter is best suited for continuous streamflow records and may not perform well with datasets that have significant gaps or irregular sampling intervals\nThe filter may not accurately capture base flow during extreme hydrological events, such as floods or droughts, where the assumptions of slow base flow changes may be violated. (Lyne and Hollick 1979)\nThe filter does not have a physical basis and is purely a mathematical construct, which may limit its applicability in certain hydrological studies (Eckhardt 2008, 2023)\n\nHowever, the technique does provide objective, repeatable base-flow separation that is easily automated (Nathan and McMahon 1990)."
+  },
+  {
+    "objectID": "eckhardt.html",
+    "href": "eckhardt.html",
+    "title": "eckhardt",
+    "section": "",
+    "text": "The Eckhardt digital filter is a widely used two-parameter method for separating base flow from total streamflow. Introduced by Eckhardt (2005), it improves upon one-parameter filters such as Lyne–Hollick by explicitly incorporating watershed characteristics through the maximum base-flow index (\\(BFImax\\)).\nThe Eckhardt filter is recursive and produces a base-flow time series that varies smoothly with discharge. The method is applied forward in time, and performance depends on the appropriate choice of its two parameters: the recession constant (\\(\\alpha\\)) and the maximum base-flow index (\\(BFImax\\)).\nThe equation for the Eckhardt filter is as follows: \\[\nb_k = \\frac{(1 - BFImax) \\cdot \\alpha \\ b_{k-1} + (1 - \\alpha) \\cdot BFImax \\ Q_k}{1 - \\alpha \\cdot BFImax}\n\\]\nwhere \\(b\\) is base flow, \\(\\alpha\\) is the recession constant, \\(BFImax\\) is the maximum base-flow index, \\(Q\\) is the total streamflow, and \\(k\\) is the time step.\n\n\n\n\nThe recession constant (\\(\\alpha\\)) controls the rate at which base flow recedes over time. It typically ranges between 0.90 and 0.98, with higher values indicating slower recession rates.\nA common approach to estimate \\(\\alpha\\) is to analyze recession periods in the streamflow record. This can be done by identifying periods of declining discharge and fitting an exponential decay model to estimate the recession constant.\n\n\n\nThe maximum base-flow index (\\(BFImax\\)) represents the maximum proportion of total streamflow that can be attributed to base flow in a system.\nTypical values, provided by Eckhardt (2005), are:\n\nPerennial, porous aquifers: 0.80\nEphemeral, porous aquifers: 0.50\nPerennial, hard-rock aquifers: 0.25\n\nA robust approach to estimating \\(BFImax\\) is the backwards-filter method introduced by Collischonn and Fan (2013), which reconstructs a recession-controlled base-flow hydrograph by applying the filter in reverse and comparing base-flow volume to total volume.\n\n\n\n\n\nThe Eckhardt filter is sensitive to the choice of both \\(\\alpha\\) and \\(BFImax\\). It is recommended to test different values to find the most appropriate ones for a given dataset.\n\nCommonly used values for \\(\\alpha\\) are between 0.90 and 0.98, while \\(BFImax\\) values depend on watershed characteristics as outlined above.\n\nThe Eckhardt filter is best suited for continuous streamflow records and may not perform well with datasets that have significant gaps or irregular sampling intervals.\nThe Eckhardt filter is sensitive to the choice of both parameters— \\(\\alpha\\) and \\(BFImax\\).\n\n\\(\\alpha\\) should be estimated from clean recession segments.\n\\(BFImax\\) should reflect the long-term hydrologic character of the watershed rather than short-term variability.\n\n\\(BFImax\\) values are not universal.\n\nHighly permeable, perennial systems often justify \\(BFImax\\) in the range 0.80–0.95.\nFlashy or steep systems may require values closer to 0.25–0.60.\nThe backwards-filter method of Collischonn & Fan (2013) provides a data-driven estimate of \\(BFImax\\), reducing reliance on subjective selection."
+  },
+  {
+    "objectID": "eckhardt.html#parameters",
+    "href": "eckhardt.html#parameters",
+    "title": "eckhardt",
+    "section": "",
+    "text": "The recession constant (\\(\\alpha\\)) controls the rate at which base flow recedes over time. It typically ranges between 0.90 and 0.98, with higher values indicating slower recession rates.\nA common approach to estimate \\(\\alpha\\) is to analyze recession periods in the streamflow record. This can be done by identifying periods of declining discharge and fitting an exponential decay model to estimate the recession constant.\n\n\n\nThe maximum base-flow index (\\(BFImax\\)) represents the maximum proportion of total streamflow that can be attributed to base flow in a system.\nTypical values, provided by Eckhardt (2005), are:\n\nPerennial, porous aquifers: 0.80\nEphemeral, porous aquifers: 0.50\nPerennial, hard-rock aquifers: 0.25\n\nA robust approach to estimating \\(BFImax\\) is the backwards-filter method introduced by Collischonn and Fan (2013), which reconstructs a recession-controlled base-flow hydrograph by applying the filter in reverse and comparing base-flow volume to total volume."
+  },
+  {
+    "objectID": "eckhardt.html#considerations",
+    "href": "eckhardt.html#considerations",
+    "title": "eckhardt",
+    "section": "",
+    "text": "The Eckhardt filter is sensitive to the choice of both \\(\\alpha\\) and \\(BFImax\\). It is recommended to test different values to find the most appropriate ones for a given dataset.\n\nCommonly used values for \\(\\alpha\\) are between 0.90 and 0.98, while \\(BFImax\\) values depend on watershed characteristics as outlined above.\n\nThe Eckhardt filter is best suited for continuous streamflow records and may not perform well with datasets that have significant gaps or irregular sampling intervals.\nThe Eckhardt filter is sensitive to the choice of both parameters— \\(\\alpha\\) and \\(BFImax\\).\n\n\\(\\alpha\\) should be estimated from clean recession segments.\n\\(BFImax\\) should reflect the long-term hydrologic character of the watershed rather than short-term variability.\n\n\\(BFImax\\) values are not universal.\n\nHighly permeable, perennial systems often justify \\(BFImax\\) in the range 0.80–0.95.\nFlashy or steep systems may require values closer to 0.25–0.60.\nThe backwards-filter method of Collischonn & Fan (2013) provides a data-driven estimate of \\(BFImax\\), reducing reliance on subjective selection."
+  }
+]

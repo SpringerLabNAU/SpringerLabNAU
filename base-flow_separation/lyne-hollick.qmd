@@ -1,0 +1,44 @@
+---
+title: "Lyne-Hollick Filter"
+format: html
+---
+
+
+The Lyne-Hollick digital filter technique was first suggested in 1979 [@lyne1979]. The technique is derived from signal analysis, namely high-pass filters where the signal (streamflow) is separated into high-frequency (quick flow) and low-frequency (base flow) components.
+
+This recursive digital filter[^lyne-hollick-1] that uses a single parameter, alpha ($\alpha$) , to control the separation between base flow and quick flow. The filter is applied in both forward and backward directions to minimize phase distortion.
+
+[^lyne-hollick-1]: In signal processing, a recursive filter is a type of filter which reuses one or more of its outputs as an input (eg. streamflow)
+
+The equations for the Lyne-Hollick filter are as follows:
+
+$$
+b = \alpha b_{k-1} + \frac{1-\alpha}{2}(Q_k + Q_{k-1})
+$$
+
+where $b$ is base flow, $\alpha$ is the filter parameter, $Q$ is the total streamflow, and $k$ is the time step.
+
+## Parameters
+
+### $\alpha$
+
+The filter parameter, $\alpha$, controls the attenuation of base-flow separation from the streamflow record.
+
+The $\alpha$ is typically set between 0.90 and 0.95 [@nathan1990; ]. A higher value of $\alpha$ results in greater signal attenuation (lower base flow estimate), while a lower value allows for less signal attenuation (greater base flow estimate).
+
+### Number of passes
+
+The Lyne-Hollick filter can be applied in both forward and backward directions to minimize phase distortion[^lyne-hollick-2]. Often, the filter passes over the streamflow data three times: forward, backwards, and forwards again.The number of passes determines the smoothness of the base flow estimate, with more passes resulting in a smoother base flow.
+
+[^lyne-hollick-2]: Alteration of the signal's shape by a filter modulating different frequencies by different amounts.
+
+## Considerations
+
+-   The Lyne-Hollick filter is sensitive to the choice of $\alpha$, and it is recommended to test different values to find the most appropriate one for a given dataset.
+    -   Commonly used values are between 0.90 and 0.95, but the optimal value may vary depending on the hydrological characteristics of the watershed being studied [@nathan1990].
+-   The Lyne-Hollick filter is best suited for continuous streamflow records and may not perform well with datasets that have significant gaps or irregular sampling intervals
+-   The filter may not accurately capture base flow during extreme hydrological events, such as floods or droughts, where the assumptions of slow base flow changes may be violated. [@lyne1979]
+-   The filter does not have a physical basis and is purely a mathematical construct, which may limit its applicability in certain hydrological studies [@eckhardt2008; @eckhardt2023]
+    -   However, the technique does provide objective, repeatable base-flow separation that is easily automated [@nathan1990].
+
+## References

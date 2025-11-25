@@ -1,0 +1,186 @@
+---
+title: "Lyne-Hollick Filter Example"
+format: html
+---
+
+In this example, we will demonstrate how to use the Lyne-Hollick filter for base-flow separation using the `grwat` package in R. We will download daily stream discharge data from a USGS streamgage, apply the Lyne-Hollick filter, and visualize the results.
+
+## Install packages
+
+```{r message = FALSE, warning= FALSE, results='hide'}
+options(repos = c(CRAN = "https://cloud.r-project.org"))  # set mirror
+install.packages(c("grwat", "dataRetrieval", "dplyr", "sf", "ggplot2"))
+
+library(grwat)
+library(dataRetrieval)
+library(dplyr)
+library(sf)
+library(ggplot2)
+```
+
+## Load dataset
+
+Here we load in a stream discharge dataset from a USGS streamgage using the `DataRetrieval` package. We are loading in stream discharge from the [Verde River near Clarkdale, AZ](https://waterdata.usgs.gov/monitoring-location/USGS-09504000/#dataTypeId=continuous-00060-0&period=P365D&showFieldMeasurements=true) streamgauge.
+
+```{r message = FALSE}
+
+# Download raw data from USGS NWIS
+verde_daily.raw <- read_waterdata_daily(monitoring_location_id = "USGS-09504000",  # Verde River near Clarkdale, AZ
+                                        parameter_code = c("00060"),              # discharge
+                                        statistic_id = "00003",                   # mean
+                                        time = c("2023-10-01", "2024-09-30"))    # time range
+
+# Process data - convert from cfs to cms and select relevant columns
+verde_daily <- verde_daily.raw |>
+  st_drop_geometry() |>
+  select(time, value) |>
+  mutate(
+    discharge_cms = value / 35.3147   # cfs → cubic meters/ second
+  ) |>
+  rename(date = time) |>
+  select(date, discharge_cms)
+
+# View first few rows of processed data
+head(verde_daily)
+
+```
+
+Now we will plot the hydrograph of daily discharge for the Verde River near Clarkdale, AZ.
+``` {r}
+# Plot daily discharge time series
+ggplot(verde_daily, aes(x = date, y = discharge_cms)) +
+  geom_line() +
+  scale_y_log10() + #log scale for better visualization
+  labs(
+    title = "Daily Stream Discharge (log scale) - Verde River near Clarkdale, AZ",
+    x = "Date",
+    y = "Discharge (m³/s)"
+  ) +
+  theme_bw()
+```
+
+## Conduct base-flow separation
+Here we apply the Lyne-Hollick filter using the `grwat` package to separate base flow from total streamflow. We will test different alpha parameters and number of passes to see how they affect the base-flow separation.
+
+```{r}
+# Apply Lyne-Hollick filter
+base_flow <- gr_baseflow(Q = verde_daily$discharge_cms,
+                         method = "lynehollick",
+                         padding = 100)
+
+# Combine base flow with original data
+verde_daily_bf <- verde_daily %>%
+  mutate(base_flow_cms = base_flow)
+
+# View first few rows of data with base flow
+head(verde_daily_bf)
+
+# Plot original discharge and base flow
+ggplot(verde_daily_bf, aes(x = date)) +
+  geom_line(aes(y = discharge_cms, color = "Total Discharge")) +
+  geom_line(aes(y = base_flow_cms, color = "Base Flow")) +
+  scale_y_log10() + #log scale for better visualization
+  labs(
+    title = "Base Flow Separation using Lyne-Hollick Filter",
+    x = "Date",
+    y = "Discharge (m³/s)",
+    color = "Legend"
+  ) +
+  theme_bw()
+```
+
+### Testing alpha parameters
+Here we test different alpha parameters (0.90, 0.925, 0.95) to see how they affect the base-flow separation. Generally we expect that a lower alpha will result in a higher base-flow estimate, while a higher alpha will result in a lower base-flow estimate.
+
+```{r}
+# Test different alpha parameters
+alpha_values <- c(0.90, 0.925, 0.95)
+base_flow_list <- list()
+
+for (alpha in alpha_values) {
+  base_flow_list[[as.character(alpha)]] <- gr_baseflow(Q = verde_daily$discharge_cms,
+                                                       method = "lynehollick",
+                                                       a = alpha,
+                                                       padding = 100)
+}
+
+# Combine results into a single data frame for plotting
+verde_daily_bf_alpha <- verde_daily %>%
+  mutate(base_flow_0.90 = base_flow_list[["0.9"]],
+         base_flow_0.925 = base_flow_list[["0.925"]],
+         base_flow_0.95 = base_flow_list[["0.95"]])
+
+# Plot base flow for different alpha values
+ggplot(verde_daily_bf_alpha, aes(x = date)) +
+  geom_line(aes(y = discharge_cms, color = "Total Discharge"), color = 'black') +
+  geom_line(aes(y = base_flow_0.90, color = "Alpha = 0.90")) +
+  geom_line(aes(y = base_flow_0.925, color = "Alpha = 0.925")) +
+  geom_line(aes(y = base_flow_0.95, color = "Alpha = 0.95")) +
+  scale_y_log10() + #log scale for better visualization
+  labs(
+    title = "Base Flow Separation with Different Alpha Values",
+    x = "Date",
+    y = "Base Flow (m³/s)",
+    color = "Alpha Value"
+  ) +
+  theme_bw()
+
+```
+We can see in the hydrograph above that the alpha parameter significantly affects the base-flow estimate. A lower alpha (0.90) results in a higher base-flow estimate, while a higher alpha (0.95) results in a lower base-flow estimate.
+
+If possible, compare the results with known hydrological characteristics of the watershed to determine the most appropriate alpha value for this dataset. When lacking accurate local measurements, consider using a commonly accepted value such as 0.925.
+
+### Testing number of passes
+Here we test how the number of passes (forward only, forward-backward, forward-backward-forward) affects the base-flow separation. Typically, the passes will effect the smoothness of the base-flow estimate.
+
+```{r}
+# Test different number of passes
+passes_values <- c(1, 2, 3)
+base_flow_passes_list <- list()
+
+for (passes in passes_values) {
+  base_flow_passes_list[[as.character(passes)]] <- gr_baseflow(Q = verde_daily$discharge_cms,
+                                                               method = "lynehollick",
+                                                               passes = passes,
+                                                               padding = 100)
+}
+
+# Combine results into a single data frame for plotting
+verde_daily_bf_passes <- verde_daily %>%
+  mutate(base_flow_1pass = base_flow_passes_list[["1"]],
+         base_flow_2pass = base_flow_passes_list[["2"]],
+         base_flow_3pass = base_flow_passes_list[["3"]])
+
+# Plot base flow for different number of passes
+ggplot(verde_daily_bf_passes, aes(x = date)) +
+  geom_line(aes(y = discharge_cms, color = "Total Discharge"), color = 'black') +
+  geom_line(aes(y = base_flow_1pass, color = "1 Pass")) +
+  geom_line(aes(y = base_flow_2pass, color = "2 Passes")) +
+  geom_line(aes(y = base_flow_3pass, color = "3 Passes")) +
+  scale_y_log10() + #log scale for better visualization
+  labs(
+    title = "Base Flow Separation with Different Number of Passes",
+    x = "Date",
+    y = "Base Flow (m³/s)",
+    color = "Number of Passes"
+  ) +
+  theme_bw()
+
+```
+In the hydrograph above, we see that varying the number of passes affects the smoothness and magnitude of the base-flow estimate. During periods of increased quick flow, more passes tend to produce a smoother base-flow estimate.
+
+When selecting the number of passes, consider the desired balance between capturing quick flow variations and obtaining a smooth base-flow estimate. A commonly accepted method is to use three passes (forward-backward-forward) for a balanced approach.
+
+## Calculating base-flow index (BFI)
+
+Base-flow index (BFI) is a normalized measure of the contribution of base flow to total streamflow in a river. It is calculated as the ratio of total base flow to total streamflow over a specified time period.
+
+```{r}
+# Calculate total base flow and total streamflow
+total_base_flow <- sum(verde_daily_bf$base_flow_cms, na.rm = TRUE)
+total_streamflow <- sum(verde_daily_bf$discharge_cms, na.rm = TRUE)
+
+# Calculate BFI
+bfi <- total_base_flow / total_streamflow
+```
+The calculated BFI for the Verde River near Clarkdale, AZ over the specified time period is `r round(bfi, 3)`. This indicates that approximately `r round(bfi * 100, 1)`\% of the total streamflow is contributed by base flow during this time period (October 1, 2023 to September 30, 2024).

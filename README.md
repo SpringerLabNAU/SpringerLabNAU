@@ -40,12 +40,12 @@ Research interests: Karst hydrogeology, groundwater-surface water interactions, 
 ### **Current Members**
 
 
-<img src="Images/Images/Ryan_image.jpeg" alt="Ryan" width="300"/>
+<img src="Images/Ryan_image.jpeg" alt="Ryan" width="300"/>
 
 -   **Ryan Lima, Ph.D.** – *Postdoctoral Scholar*\
     *Mapping and modeling landscape-scale groundwater recharge in Arizona’s karst terrains.*\
 
-<img src="Images/ImagesCaelum_image.jpg" alt="Caelum" width="300"/>
+<img src="Images/Caelum_image.jpg" alt="Caelum" width="300"/>
 
 -   **Caelum Mroczek** – *Ph.D. Candidate*\
     *Using AI/ML to quantify base flow and aquifer connectivity in arid regions.*

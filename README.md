@@ -2,7 +2,7 @@
 
 *Understanding groundwater, karst, and springs across the Southwest.*
 
-![](Images/SpringerLabs_Final.png)
+![](Images/SpringerLabs_Final.png =200x)
 
 ## 🧭 About
 
